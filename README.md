@@ -10,7 +10,8 @@ likely bugs, and suggests questions a reviewer should ask.
 - **Next.js** (App Router) + **TypeScript** + **Tailwind CSS**
 - **Vitest** for unit tests
 - **GitHub Actions** for CI
-- Planned: Postgres + Drizzle, GitHub App + Octokit, Inngest, Claude API
+- **Claude API** (`@anthropic-ai/sdk`) with structured outputs validated by **Zod**
+- Planned: Postgres + Drizzle, GitHub App + Octokit, Inngest
 
 ## Getting started
 
@@ -22,7 +23,17 @@ cp .env.example .env.local   # fill in values as each phase needs them
 npm run dev
 ```
 
-Then open http://localhost:3000.
+Then open http://localhost:3000 and go to **Review a diff**.
+
+To run real reviews, add a Claude API key from https://console.anthropic.com to `.env.local`:
+
+```
+ANTHROPIC_API_KEY=sk-ant-...
+```
+
+Each review costs roughly $0.01–$0.10 depending on the size of the diff. Set a monthly spending
+limit in the Anthropic Console before deploying, because anyone who finds the deployed `/review`
+page can use it.
 
 ## Scripts
 
@@ -37,12 +48,25 @@ Then open http://localhost:3000.
 
 CI runs lint, type check, tests and build on every push to `main` and every pull request.
 
+## How a review works
+
+1. The diff is split per file, and lockfiles, generated files and binaries are dropped.
+2. The rest is sent to Claude with a system prompt and wrapped in randomly named tags, so text
+   inside the diff can't pose as instructions (prompt injection defence).
+3. Claude must answer in a fixed JSON shape (summary, changes, risks, questions), defined once in
+   `src/lib/review/schema.ts` with Zod and validated again before use.
+4. Token usage and estimated cost are logged for every review. The diff itself is never logged.
+
 ## Project structure
 
 ```
 src/
-  app/        Next.js routes and UI
-  lib/        Core logic (e.g. diff-filter: decides which files are worth reviewing)
+  app/
+    review/       Paste-a-diff page
+    api/review/   POST endpoint: validates input, calls Claude, returns the review
+  lib/
+    diff-filter.ts  Decides which files are worth reviewing
+    review/         Prompt, output schema, diff splitting, cost estimates, Claude call
 .github/
   workflows/  CI
 ```

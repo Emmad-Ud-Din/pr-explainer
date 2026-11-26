@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const steps = [
   {
     title: "Open a pull request",
@@ -25,6 +27,14 @@ export default function Home() {
           An AI reviewer for GitHub pull requests. It explains what changed, flags likely bugs, and
           helps reviewers ask the right questions.
         </p>
+        <div>
+          <Link
+            href="/review"
+            className="inline-flex h-11 items-center rounded-full bg-zinc-900 px-6 font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+          >
+            Try it: review a diff
+          </Link>
+        </div>
       </header>
 
       <ol className="grid gap-4 sm:grid-cols-3">
