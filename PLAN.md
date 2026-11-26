@@ -26,15 +26,13 @@ suggests questions for reviewers. About 8 weeks at roughly 10 hours a week.
 
 ## Phase 1: The AI core, no GitHub yet (weeks 1–2)
 
-- [x] Page where you paste a diff (`/review`)
-- [x] API route that sends the diff to Claude and returns structured JSON (`/api/review`):
+- [ ] Page where you paste a diff
+- [ ] API route that sends the diff to Claude and returns structured JSON:
   - plain-English summary
   - risks: file, line, severity, explanation
   - questions a reviewer should ask
-- [x] Validate the response with Zod; handle errors and slow responses in the UI
-- [x] Log tokens used and cost per review
-- [x] Prompt injection defence: diff wrapped in randomly named tags and treated as data
-- [ ] Try it on 5–10 real diffs from your own projects and tune the prompt
+- [ ] Validate the response with Zod; handle errors and slow responses in the UI
+- [ ] Log tokens used and cost per review
 
 **Done when:** pasting a real diff gives a useful, consistently formatted review.
 
