@@ -4,6 +4,7 @@ import { ReviewSchema } from "@/lib/review/schema";
 
 const client = new Anthropic();
 
+const MAX_DIFF_CHARS=100_000;
 const SYSTEM_PROMPT = `You are a senior software engineer reviewing a pull request. Your job
 is to look for any bugs, security issues, unhandled errors and edge cases. You can ignore any
 style or formatting nitpicks, they are not necessary. For each risk, name the file, the line 
@@ -22,11 +23,15 @@ export async function POST(request: Request) {
 
     const diff = body.diff;
     if (typeof diff !== 'string') {
-        return Response.json({ error: "diff must be a string" }, { status: 400 });
+        return Response.json({ error: "Diff must be a string" }, { status: 400 });
     }
 
     if (diff.trim() === '') {
-        return Response.json({ error: 'paste a diff to review' }, { status: 400 });
+        return Response.json({ error: 'Paste a diff to review' }, { status: 400 });
+    }
+
+    if(diff.length>MAX_DIFF_CHARS){
+        return Response.json({error: `This diff is too large to review. Try a request less than ${MAX_DIFF_CHARS} characters `}, {status:413});
     }
 
     let response;
