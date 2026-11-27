@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { ReviewResult } from "./review-result";
+import type { Review } from "@/lib/review/schema";
+
 
 export function ReviewForm() {
     const [diff, setDiff] = useState("");
     const [loading, setLoading] = useState(false);
-    const [result, setResult] = useState<unknown>(null);
+    const [result, setResult] = useState<Review|null>(null);
     const [error, setError] = useState<string | null>(null);
 
     async function handleSubmit(event: React.FormEvent) {
@@ -26,7 +29,7 @@ export function ReviewForm() {
                 setError(data.error ?? "Something went wrong");
                 return;
             }
-            setResult(data);
+            setResult(data.review);
         } catch {
             setError("Could not get a review. Please try again");
         } finally {
@@ -51,11 +54,9 @@ export function ReviewForm() {
                 {loading ? "Reviewing…" : "Review diff"}
             </button>
 
-            {result !== null && (
-                <pre className="overflow-auto rounded bg-gray-100 p-4 text-sm">
-                    {JSON.stringify(result, null, 2)}
-                </pre>
-            )}
+            {result !== null && 
+                 <ReviewResult review={result} />
+            }
             {error && (
                 <p className="rounded border border-red-300 bg-red-50 p-3 text-red-800">{error}</p>
             )}
